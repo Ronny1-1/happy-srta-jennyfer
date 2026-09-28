@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Feliz Cumpleaños Srta Jennyfer!</title>
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    body {
+      background-color: #0d0015;
+      color: #ffd700;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+      max-width: 90%;
+    }
+    .text-display {
+      font-size: 3.2rem;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 0 20px #ffae00, 0 0 30px #ffd700;
+      animation: pulse 1.2s infinite alternate;
+    }
+    .final-message {
+      display: none;
+      animation: fadeIn 1.5s ease-in-out forwards;
+    }
+    .final-message h1 {
+      font-size: 2.8rem;
+      color: #ffd700;
+      text-shadow: 0 0 25px #ffae00, 0 0 40px #ffd700;
+      margin-bottom: 10px;
+    }
+    .final-message p {
+      font-size: 1.5rem;
+      color: #ffffff;
+      text-shadow: 0 0 10px #ffd700;
+    }
+    .music-btn {
+      margin-top: 18px;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      background-color: #ffae00;
+      color: #0d0015;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ffd700;
+      transition: transform 0.2s ease;
+    }
+    .music-btn:active {
+      transform: scale(0.95);
+    }
+    .note-btn {
+      margin-top: 12px;
+      padding: 8px 18px;
+      font-size: 0.95rem;
+      background: transparent;
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .note-content {
+      display: none;
+      margin-top: 15px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      color: #ffffff;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      animation: fadeIn 0.8s ease;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Archivo de Audio -->
+  <audio id="birthdayAudio" preload="auto">
+    <source src="cancion.mp3.mp4" type="audio/mp4">
+    <source src="cancion.mp3" type="audio/mpeg">
+  </audio>
+
+  <canvas id="sunflowerCanvas"></canvas>
+
+  <div class="container">
+    <div id="display" class="text-display">3</div>
+    
+    <div id="finalMessage" class="final-message">
+      <h1>¡Feliz cumpleaños Srta Jennyfer! 🌻</h1>
+      <p>¡Que tenga un día maravilloso y especial! ✨</p>
+      
+      <div>
+        <button class="music-btn" id="playBtn">🎵 Toca para escuchar tu canción</button>
+      </div>
+
+      <div>
+        <button class="note-btn" id="noteBtn">✉️ Un pequeño mensaje para usted</button>
+      </div>
+
+      <div class="note-content" id="noteContent">
+        <p>Srta Jennyfer, le deseo lo mejor hoy en su cumpleaños espero cumpla muchos. Dios la bendiga y gracias por su amistad 🌻✨</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('sunflowerCanvas');
+    const ctx = canvas.getContext('2d');
+    const audio = document.getElementById('birthdayAudio');
+    const playBtn = document.getElementById('playBtn');
+    const noteBtn = document.getElementById('noteBtn');
+    const noteContent = document.getElementById('noteContent');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const sunflowers = [];
+    // Lluvia únicamente de girasoles
+    const sunflowerSymbols = ['🌻'];
+
+    for (let i = 0; i < 45; i++) {
+      sunflowers.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 22 + 14,
+        speed: Math.random() * 2 + 1,
+        symbol: '🌻',
+        opacity: Math.random() * 0.7 + 0.3
+      });
+    }
+
+    function animateSunflowers() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      sunflowers.forEach(s => {
+        ctx.fillStyle = `rgba(255, 215, 0, ${s.opacity})`;
+        ctx.font = `${s.size}px Arial`;
+        ctx.fillText(s.symbol, s.x, s.y);
+        s.y += s.speed;
+        if (s.y > canvas.height) {
+          s.y = -20;
+          s.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(animateSunflowers);
+    }
+    animateSunflowers();
+
+    // Botón de música
+    playBtn.addEventListener('click', () => {
+      audio.play().then(() => {
+        playBtn.innerText = "🎶 Sonando...";
+      }).catch(err => {
+        console.error("Error al reproducir audio:", err);
+      });
+    });
+
+    // Desplegar mensaje especial
+    noteBtn.addEventListener('click', () => {
+      if (noteContent.style.display === 'block') {
+        noteContent.style.display = 'none';
+      } else {
+        noteContent.style.display = 'block';
+      }
+    });
+
+    // --- Secuencia de Texto Limpia (Sin corazones) ---
+    const display = document.getElementById('display');
+    const finalMessage = document.getElementById('finalMessage');
+
+    const sequence = [
+      { text: "3", delay: 1000 },
+      { text: "2", delay: 1000 },
+      { text: "1", delay: 1000 },
+      { text: "¡FELIZ", delay: 1200 },
+      { text: "CUMPLEAÑOS!", delay: 1200 }
+    ];
+
+    let step = 0;
+    function runSequence() {
+      if (step < sequence.length) {
+        display.innerText = sequence[step].text;
+        setTimeout(runSequence, sequence[step].delay);
+        step++;
+      } else {
+        display.style.display = 'none';
+        finalMessage.style.display = 'block';
+      }
+    }
+
+    setTimeout(runSequence, 1000);
+  </script>
+</body>
+</html>
